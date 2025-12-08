@@ -13,27 +13,27 @@ export type Version = {
   readonly testCases: readonly TestCase[]
 }
 
-declare const version: Version
-
-export {
-  version as latest,
-  version as '0.31.2',
-  version as '0.30',
-  version as '0.29',
-  version as '0.28',
-  version as '0.27',
-  version as '0.26',
-  version as '0.25',
-  version as '0.24',
-  version as '0.23',
-  version as '0.22',
-  version as '0.21',
-  version as '0.20',
-  version as '0.19',
-  version as '0.18',
-  version as '0.17',
-  version as '0.16',
-  version as '0.15',
-  version as '0.14',
-  version as '0.13',
+declare const _: {
+  readonly latest: Version
+  readonly '0.31.2': Version
+  readonly '0.30': Version
+  readonly '0.29': Version
+  readonly '0.28': Version
+  readonly '0.27': Version
+  readonly '0.26': Version
+  readonly '0.25': Version
+  readonly '0.24': Version
+  readonly '0.23': Version
+  readonly '0.22': Version
+  readonly '0.21': Version
+  readonly '0.20': Version
+  readonly '0.19': Version
+  readonly '0.18': Version
+  readonly '0.17': Version
+  readonly '0.16': Version
+  readonly '0.15': Version
+  readonly '0.14': Version
+  readonly '0.13': Version
 }
+
+export default _

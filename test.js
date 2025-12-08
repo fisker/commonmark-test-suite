@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import * as commonmarkTestSuite from './index.js'
+import commonmarkTestSuite from './index.js'
 
 const {latest, ...versions} = commonmarkTestSuite
 

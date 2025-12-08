@@ -1,7 +1,7 @@
 import {expectType} from 'tsd'
-import * as suite from './index.js'
+import commonmarkTestSuite from './index.js'
 
-for (const version of Object.values(suite)) {
+for (const version of Object.values(commonmarkTestSuite)) {
   expectType<string>(version.version)
   expectType<string>(version.date)
 

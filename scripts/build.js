@@ -3,7 +3,7 @@ import {inspect} from 'node:util'
 import * as cheerio from 'cheerio'
 import {outdent} from 'outdent'
 import writePrettierFile from 'write-prettier-file'
-import {downloadText, writeTextFile} from './utilities.js'
+import {downloadText} from './utilities.js'
 
 const SPEC_URL = 'https://spec.commonmark.org/'
 
@@ -78,22 +78,16 @@ async function getVersions() {
 }
 
 async function getVersion({version, date, url}) {
-  const filename = `${version}.json`
+  const filename = `${version}.js`
   const text = await downloadText(url, new URL(filename, CACHE_DIRECTORY))
 
   const testCases = JSON.parse(text)
 
-  await writeTextFile(
+  await writePrettierFile(
     new URL(filename, DATA_DIRECTORY),
-    JSON.stringify(
-      {
-        version,
-        date,
-        testCases,
-      },
-      undefined,
-      2,
-    ) + '\n',
+    outdent`
+      export default ${JSON.stringify({version, date, testCases}, undefined, 2)}
+    `,
   )
 
   return {
@@ -104,21 +98,30 @@ async function getVersion({version, date, url}) {
   }
 }
 
-const makeExportDeclaration = ({specifiers, source}) => outdent`
-  export {
-  ${specifiers.map((specifier) => `  default as ${JSON.stringify(specifier)},`).join('\n')}
-  } from ${JSON.stringify(source)} with {type: 'json'}
+const toSpecifier = (name) =>
+  name === 'latest' ? name : `$${name.replaceAll('.', '_')}`
+const makeImportDeclaration = ({specifiers, source}) => outdent`
+  import {
+  ${specifiers.map((specifier) => `  default as ${toSpecifier(specifier)},`).join('\n')}
+  } from ${JSON.stringify(source)}
 `
 
 async function generateIndexFiles(versions) {
-  const jsCode = versions
-    .flatMap(({filename, version}, index) => [
-      makeExportDeclaration({
-        specifiers: index === 0 ? ['latest', version] : [version],
-        source: `./data/${filename}`,
-      }),
-    ])
-    .join('\n')
+  const jsCode = `
+    ${versions
+      .map(({filename, version}, index) => [
+        makeImportDeclaration({
+          specifiers: index === 0 ? ['latest', version] : [version],
+          source: `./data/${filename}`,
+        }),
+      ])
+      .join('\n')}
+
+    export default {
+      latest,
+    ${versions.map(({version}) => `  ${JSON.stringify(version)}: ${toSpecifier(version)},`).join('\n')}
+    }
+  `
 
   const dtsCode = outdent`
     export type TestCase = {
@@ -136,12 +139,12 @@ async function generateIndexFiles(versions) {
       readonly testCases: readonly TestCase[];
     }
 
-    declare const version: Version
-
-    export {
-      version as latest,
-    ${versions.map(({version}) => `  version as ${JSON.stringify(version)},`).join('\n')}
+    declare const _: {
+      readonly latest: Version,
+      ${versions.map(({version}) => `  readonly ${JSON.stringify(version)}: Version,`).join('\n')}
     }
+
+    export default _
   `
 
   await Promise.all([

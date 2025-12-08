@@ -26,9 +26,9 @@ yarn add commonmark-test-suite
 Latest version
 
 ```js
-import {latest} from 'commonmark-test-suite'
+import commonmarkTestSuite from 'commonmark-test-suite'
 
-console.log(latest)
+console.log(commonmarkTestSuite.latest)
 // =>
 // {
 //   version: '0.31.2',
@@ -50,9 +50,9 @@ console.log(latest)
 Legacy versions (0.13 ~ latest)
 
 ```js
-import {'0.30' as version030} from 'commonmark-test-suite'
+import commonmarkTestSuite from 'commonmark-test-suite'
 
-console.log(version030)
+console.log(commonmarkTestSuite['0.30'])
 // =>
 // {
 //   version: '0.30',
